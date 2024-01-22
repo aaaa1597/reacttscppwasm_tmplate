@@ -50,8 +50,21 @@ void doOpenCvTask(size_t addr, int width, int height, int cnt) {
   SDL_Flip(screen);
 }
 
+extern "C" {
+int EMSCRIPTEN_KEEPALIVE add(int a, int b){
+  return a + b;
+}
+
+int EMSCRIPTEN_KEEPALIVE sub(int a, int b){
+  return a - b;
+}
+} /* extern "C" */
+
 EMSCRIPTEN_BINDINGS(my_module) {
   emscripten::function("doOpenCvTask", &doOpenCvTask);
   emscripten::function("creatabuffer", &creata_buffer);
   emscripten::function("destroybuffer", &destroy_buffer);
+
+  emscripten::function("add", &add);
+  emscripten::function("sub", &sub);
 }
