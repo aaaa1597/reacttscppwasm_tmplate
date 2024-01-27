@@ -14,24 +14,39 @@ SDL_Surface *screen = nullptr;
 
 } // namespace
 
-extern "C" int main(int argc, char **argv) {
+#define LOG_OUTPUT 0
 
+#if LOG_OUTPUT
+EM_JS(int, console_log, (const char *logstr), {
+  console.log('aaaaa ' + UTF8ToString(logstr));
+  return 0;
+});
+#else
+#define console_log(logstr)
+#endif
+
+extern "C" int main(int argc, char **argv) {
+  console_log(__PRETTY_FUNCTION__);
   SDL_Init(SDL_INIT_VIDEO);
   screen = SDL_SetVideoMode(WIDTH, HEIGHT, 32, SDL_SWSURFACE);
 
   return 0;
 }
 
-size_t creata_buffer(int size) {
+extern "C" {
+size_t EMSCRIPTEN_KEEPALIVE creata_buffer(int size) {
+  console_log(__PRETTY_FUNCTION__);
   return (size_t)malloc(size * sizeof(uint8_t));
 }
 
-void destroy_buffer(size_t p) {
+void EMSCRIPTEN_KEEPALIVE destroy_buffer(size_t p) {
+  console_log(__PRETTY_FUNCTION__);
   void *pbuf = (void*)p;
   free(pbuf);
 }
 
-void doOpenCvTask(size_t addr, int width, int height, int cnt) {
+void EMSCRIPTEN_KEEPALIVE Convert(size_t addr, int width, int height, int cnt) {
+  console_log(__PRETTY_FUNCTION__);
   auto data = reinterpret_cast<void *>(addr);
   cv::Mat rgbaMat(height, width, CV_8UC4, data);
   cv::Mat rgbMat;
@@ -49,22 +64,10 @@ void doOpenCvTask(size_t addr, int width, int height, int cnt) {
     SDL_UnlockSurface(screen);
   SDL_Flip(screen);
 }
-
-extern "C" {
-int EMSCRIPTEN_KEEPALIVE add(int a, int b){
-  return a + b;
-}
-
-int EMSCRIPTEN_KEEPALIVE sub(int a, int b){
-  return a - b;
-}
 } /* extern "C" */
 
-EMSCRIPTEN_BINDINGS(my_module) {
-  emscripten::function("doOpenCvTask", &doOpenCvTask);
-  emscripten::function("creatabuffer", &creata_buffer);
-  emscripten::function("destroybuffer", &destroy_buffer);
-
-  emscripten::function("add", &add);
-  emscripten::function("sub", &sub);
-}
+//EMSCRIPTEN_BINDINGS(my_module) {
+//  emscripten::function("convert", &Convert);
+//  emscripten::function("creatabuffer", &creata_buffer);
+//  emscripten::function("destroybuffer", &destroy_buffer);
+//}

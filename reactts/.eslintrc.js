@@ -34,6 +34,7 @@ module.exports = {
 	"globals": {
 		"read": false,
 		"readbuffer": false,
+		"readline": false,
 		"scriptArgs": false,
 		"arguments": false,
 		"quit": false,
@@ -46,5 +47,13 @@ module.exports = {
         "no-constant-condition": ["error", { "checkLoops": false }],
         "getter-return": "off",
         "no-fallthrough": "off",
+        "no-empty":  "off",
+        "no-prototype-builtins":  "off",
+        "no-redeclare":  "off",
+        "no-useless-escape": "off",
+        "no-useless-catch": "off",
+        "@typescript-eslint/no-this-alias": "off",
+        "no-undef": "off",
+        "no-inner-declarations": "off",
     }
 }
